@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import "./globals.css";
 import { Nunito } from "next/font/google";
 import Navbar from "./components/navbar/Navbar";
+import ClientOnly from "./components/ClientOnly";
+import Modal from "./components/modals/Modal";
+import RegisterModal from "./components/modals/RegisterModal";
+import ToasterProvider from "./providers/ToasterProvider";
+import LoginModal from "./components/modals/LoginModal";
+import getCurrentUer from "./actions/getCurrentUser";
 
 // const inter = Inter({ subsets: ["latin"] });
 const font = Nunito({
@@ -14,16 +20,24 @@ export const metadata: Metadata = {
   description: "Airbnb clone",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const currentUser = await getCurrentUer();
   return (
     <html lang="en">
       <body className={font.className}>
-        <Navbar/>
-        {children}</body>
+        <ClientOnly>
+          <ToasterProvider />
+          <LoginModal />
+          <RegisterModal />
+          {/* <Modal actionLabel="Submit" title="hello world" isOpen/> */}
+          <Navbar currentUser={currentUser} />
+        </ClientOnly>
+        {children}
+      </body>
     </html>
   );
 }
